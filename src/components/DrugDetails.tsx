@@ -49,20 +49,17 @@ export const DrugDetails: React.FC<DrugDetailsProps> = ({ drug }) => {
 
             <Separator />
 
-            {drug.mechanismOfAction && (
-              <>
-                <section>
-                  <div className="mb-3 flex items-center gap-2 text-primary">
-                    <Activity className="h-5 w-5" />
-                    <h3 className="font-semibold uppercase tracking-wider text-xs">Mechanism of Action</h3>
-                  </div>
-                  <p className="leading-relaxed text-muted-foreground whitespace-pre-wrap">
-                    {drug.mechanismOfAction}
-                  </p>
-                </section>
-                <Separator />
-              </>
-            )}
+            <section>
+              <div className="mb-3 flex items-center gap-2 text-primary">
+                <Activity className="h-5 w-5" />
+                <h3 className="font-semibold uppercase tracking-wider text-xs">Mechanism of Action</h3>
+              </div>
+              <p className="leading-relaxed text-muted-foreground whitespace-pre-wrap">
+                {drug.mechanismOfAction}
+              </p>
+            </section>
+
+            <Separator />
 
             <section>
               <div className="mb-3 flex items-center gap-2 text-primary">
@@ -86,59 +83,51 @@ export const DrugDetails: React.FC<DrugDetailsProps> = ({ drug }) => {
           </div>
 
           <div className="space-y-4">
-            {(drug.sideEffects?.length || 0) > 0 || (drug.contraindications?.length || 0) > 0 ? (
-              <section className="rounded-xl bg-destructive/5 p-4 border border-destructive/10">
-                <div className="mb-2 flex items-center gap-2 text-destructive">
-                  <AlertTriangle className="h-5 w-5" />
-                  <h3 className="font-semibold uppercase tracking-wider text-xs">Safety Warnings</h3>
+            <section className="rounded-xl bg-destructive/5 p-4 border border-destructive/10">
+              <div className="mb-2 flex items-center gap-2 text-destructive">
+                <AlertTriangle className="h-5 w-5" />
+                <h3 className="font-semibold uppercase tracking-wider text-xs">Safety Warnings</h3>
+              </div>
+              <div className="space-y-3">
+                <div>
+                  <h4 className="text-[10px] font-bold text-destructive/70 uppercase mb-1">Side Effects</h4>
+                  <ul className="grid grid-cols-1 gap-1">
+                    {drug.sideEffects.map((effect, i) => (
+                      <li key={i} className="flex items-start gap-2 text-sm text-destructive/80">
+                        <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-destructive/40" />
+                        {effect}
+                      </li>
+                    ))}
+                  </ul>
                 </div>
-                <div className="space-y-3">
-                  {(drug.sideEffects?.length || 0) > 0 && (
-                    <div>
-                      <h4 className="text-[10px] font-bold text-destructive/70 uppercase mb-1">Side Effects</h4>
-                      <ul className="grid grid-cols-1 gap-1">
-                        {drug.sideEffects?.map((effect, i) => (
-                          <li key={i} className="flex items-start gap-2 text-sm text-destructive/80">
-                            <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-destructive/40" />
-                            {effect}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-                  {(drug.contraindications?.length || 0) > 0 && (
-                    <div>
-                      <h4 className="text-[10px] font-bold text-destructive/70 uppercase mb-1">Contraindications</h4>
-                      <ul className="grid grid-cols-1 gap-1">
-                        {drug.contraindications?.map((item, i) => (
-                          <li key={i} className="flex items-start gap-2 text-sm text-destructive/80">
-                            <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-destructive/60" />
-                            {item}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
+                <div>
+                  <h4 className="text-[10px] font-bold text-destructive/70 uppercase mb-1">Contraindications</h4>
+                  <ul className="grid grid-cols-1 gap-1">
+                    {drug.contraindications.map((item, i) => (
+                      <li key={i} className="flex items-start gap-2 text-sm text-destructive/80">
+                        <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-destructive/60" />
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
                 </div>
-              </section>
-            ) : null}
+              </div>
+            </section>
 
-            {(drug.interactions?.length || 0) > 0 && (
-              <section className="rounded-xl bg-amber-500/5 p-4 border border-amber-500/10">
-                <div className="mb-2 flex items-center gap-2 text-amber-600">
-                  <AlertTriangle className="h-5 w-5" />
-                  <h3 className="font-semibold uppercase tracking-wider text-xs">Interactions</h3>
-                </div>
-                <ul className="grid grid-cols-1 gap-1">
-                  {drug.interactions?.map((item, i) => (
-                    <li key={i} className="flex items-start gap-2 text-sm text-amber-700">
-                      <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-amber-500/40" />
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-              </section>
-            )}
+            <section className="rounded-xl bg-amber-500/5 p-4 border border-amber-500/10">
+              <div className="mb-2 flex items-center gap-2 text-amber-600">
+                <AlertTriangle className="h-5 w-5" />
+                <h3 className="font-semibold uppercase tracking-wider text-xs">Interactions</h3>
+              </div>
+              <ul className="grid grid-cols-1 gap-1">
+                {drug.interactions.map((item, i) => (
+                  <li key={i} className="flex items-start gap-2 text-sm text-amber-700">
+                    <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-amber-500/40" />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </section>
 
             <section className="rounded-xl bg-primary/5 p-6 border border-primary/10">
               <div className="mb-4 flex items-center gap-2 text-primary">
@@ -146,45 +135,37 @@ export const DrugDetails: React.FC<DrugDetailsProps> = ({ drug }) => {
                 <h3 className="font-semibold uppercase tracking-wider text-xs">Precautions & Dosage</h3>
               </div>
               <div className="space-y-4">
-                {drug.precautions && (
-                  <div>
-                    <h4 className="text-xs font-bold text-primary/70 uppercase mb-1">Precautions</h4>
-                    <p className="text-sm text-muted-foreground">{drug.precautions}</p>
+                <div>
+                  <h4 className="text-xs font-bold text-primary/70 uppercase mb-1">Precautions</h4>
+                  <p className="text-sm text-muted-foreground">{drug.precautions}</p>
+                </div>
+                <div>
+                  <h4 className="text-xs font-bold text-primary/70 uppercase mb-1">Medication Form</h4>
+                  <div className="flex items-center gap-2">
+                    <Badge variant="outline" className="border-primary/20 bg-primary/5 text-primary">
+                      <Tablets className="mr-1 h-3 w-3" />
+                      {drug.form}
+                    </Badge>
                   </div>
-                )}
-                {drug.form && (
-                  <div>
-                    <h4 className="text-xs font-bold text-primary/70 uppercase mb-1">Medication Form</h4>
-                    <div className="flex items-center gap-2">
-                      <Badge variant="outline" className="border-primary/20 bg-primary/5 text-primary">
-                        <Tablets className="mr-1 h-3 w-3" />
-                        {drug.form}
-                      </Badge>
-                    </div>
+                </div>
+                <div>
+                  <h4 className="text-xs font-bold text-primary/70 uppercase mb-1">Recommended Age (Years)</h4>
+                  <div className="flex items-center gap-2">
+                    <Badge variant="outline" className="border-primary/20 bg-primary/5 text-primary">
+                      <Users className="mr-1 h-3 w-3" />
+                      {drug.ageGroup}
+                    </Badge>
                   </div>
-                )}
-                {drug.ageGroup && (
-                  <div>
-                    <h4 className="text-xs font-bold text-primary/70 uppercase mb-1">Recommended Age (Years)</h4>
-                    <div className="flex items-center gap-2">
-                      <Badge variant="outline" className="border-primary/20 bg-primary/5 text-primary">
-                        <Users className="mr-1 h-3 w-3" />
-                        {drug.ageGroup}
-                      </Badge>
-                    </div>
+                </div>
+                <div>
+                  <h4 className="text-xs font-bold text-primary/70 uppercase mb-1">Dosage Times</h4>
+                  <div className="flex items-center gap-2">
+                    <Badge variant="outline" className="border-primary/20 bg-primary/5 text-primary">
+                      <Clock className="mr-1 h-3 w-3" />
+                      {drug.frequency}
+                    </Badge>
                   </div>
-                )}
-                {drug.frequency && (
-                  <div>
-                    <h4 className="text-xs font-bold text-primary/70 uppercase mb-1">Dosage Times</h4>
-                    <div className="flex items-center gap-2">
-                      <Badge variant="outline" className="border-primary/20 bg-primary/5 text-primary">
-                        <Clock className="mr-1 h-3 w-3" />
-                        {drug.frequency}
-                      </Badge>
-                    </div>
-                  </div>
-                )}
+                </div>
                 <div className="pt-4">
                   <div className="mb-3 flex items-center gap-2 text-primary">
                     <TableIcon className="h-4 w-4" />

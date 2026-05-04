@@ -3,7 +3,7 @@ import Webcam from 'react-webcam';
 import { Camera, RefreshCw, Scan, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { scanDrugImage } from '@/services/geminiService';
+import { scanDrugImage } from '@/services/drugService';
 import { DrugInfo } from '@/types';
 import { motion, AnimatePresence } from 'motion/react';
 

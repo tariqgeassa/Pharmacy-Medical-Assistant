@@ -4,7 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { searchDrug, getSuggestions } from '@/services/geminiService';
+import { searchDrug, getSuggestions, scanDrugImage } from '@/services/drugService';
 import { DrugInfo } from '@/types';
 import { Scanner } from './components/Scanner';
 import { DrugDetails } from './components/DrugDetails';

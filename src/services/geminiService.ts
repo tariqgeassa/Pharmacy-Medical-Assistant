@@ -3,10 +3,6 @@ import { DrugInfo } from "@/types";
 
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || "" });
 
-if (!process.env.GEMINI_API_KEY) {
-  console.warn("GEMINI_API_KEY is not defined in the environment. AI features will not work.");
-}
-
 const DRUG_INFO_SCHEMA = {
   type: Type.OBJECT,
   properties: {
@@ -51,48 +47,41 @@ const DRUG_INFO_SCHEMA = {
       description: "A summary table of dosages for different ages and forms"
     },
   },
-  // Reduce absolute requirements to make search more robust
-  required: ["name", "originalFormula", "medicalFormula", "information", "usage", "dosageTable"]
+  required: ["name", "originalFormula", "medicalFormula", "information", "sideEffects", "contraindications", "interactions", "mechanismOfAction", "usage", "ageGroup", "frequency", "precautions", "adultDosage", "childDosage", "form", "dosageTable"]
 };
 
-export async function searchDrug(query: string): Promise<DrugInfo | null> {
+export async function searchDrugGemini(query: string, fdaContext?: any): Promise<DrugInfo | null> {
   try {
-    console.log("Searching for drug:", query);
-    const response = await ai.models.generateContent({
-      model: "gemini-3.1-pro-preview",
-      contents: `Provide detailed medical information for the drug: ${query}. 
-Include its name, original formula (brand), medical formula (scientific), comprehensive general info, common side effects, contraindications, drug interactions, mechanism of action, usage, recommended age range, frequency, precautions, adult dosage, child dosage, and its physical form. 
-Return the response in JSON format according to the schema.
+    const prompt = fdaContext 
+      ? `Provide detailed medical information for the drug: ${query}. 
+         Use this official FDA label data as the primary source: ${JSON.stringify(fdaContext)}.
+         Format the output according to the schema provided.` 
+      : `Provide detailed medical information for the drug: ${query}. Include its name, original formula, medical formula, comprehensive general info, common side effects, contraindications, drug interactions, mechanism of action, usage, recommended age range in years (yearly), frequency (OD, BD, etc.), precautions, adult dosage, child dosage, and its physical form.`;
 
-CRITICAL: Also provide a detailed DOSAGE TABLE containing rows for different age groups and their specific doses.`,
+    const response = await ai.models.generateContent({
+      model: "gemini-3-flash-preview",
+      contents: `${prompt}
+
+CRITICAL: Also provide a detailed DOSAGE TABLE containing rows for different age groups (e.g., Infants, Children, Adults) and their specific doses for appropriate forms (Tablets, Capsules, Injections, Syrup, or Drops as applicable to this drug).`,
       config: {
         responseMimeType: "application/json",
         responseSchema: DRUG_INFO_SCHEMA,
       },
     });
 
-    if (!response || !response.text) {
-      console.error("Empty response from Gemini API");
-      return null;
-    }
-
-    console.log("Response received from Gemini");
     const data = JSON.parse(response.text);
-    data.imageUrl = `https://loremflickr.com/800/600/${encodeURIComponent(data.name || query)},pill/all`;
-    return data as DrugInfo;
-  } catch (error: any) {
-    console.error("Error searching drug:", error);
-    // Log more detail if available
-    if (error.message) console.error("Error Message:", error.message);
+    data.imageUrl = `https://loremflickr.com/800/600/${encodeURIComponent(data.name)},pill/all`;
+    return data;
+  } catch (error) {
+    console.error("Error searching drug in Gemini:", error);
     return null;
   }
 }
 
-export async function scanDrugImage(base64Image: string): Promise<DrugInfo | null> {
+export async function scanDrugImageGemini(base64Image: string): Promise<DrugInfo | null> {
   try {
-    console.log("Scanning drug image...");
     const response = await ai.models.generateContent({
-      model: "gemini-3.1-pro-preview",
+      model: "gemini-3-flash-preview",
       contents: [
         {
           inlineData: {
@@ -110,26 +99,19 @@ export async function scanDrugImage(base64Image: string): Promise<DrugInfo | nul
       },
     });
 
-    if (!response || !response.text) {
-      console.error("Empty response from scanner Gemini API");
-      return null;
-    }
-
     const data = JSON.parse(response.text);
-    data.imageUrl = `https://loremflickr.com/800/600/${encodeURIComponent(data.name || "medicine")},medicine/all`;
-    return data as DrugInfo;
-  } catch (error: any) {
-    console.error("Error scanning drug image:", error);
-    if (error.message) console.error("Error Message:", error.message);
+    data.imageUrl = `https://loremflickr.com/800/600/${encodeURIComponent(data.name)},medicine/all`;
+    return data;
+  } catch (error) {
+    console.error("Error scanning drug image in Gemini:", error);
     return null;
   }
 }
 
-export async function getSuggestions(input: string): Promise<string[]> {
+export async function getSuggestionsGemini(input: string): Promise<string[]> {
   if (!input || input.length < 2) return [];
   
   try {
-    console.log("Getting suggestions for:", input);
     const response = await ai.models.generateContent({
       model: "gemini-3-flash-preview",
       contents: `Provide a list of 5 common medicine names that start with or are related to: "${input}". Return as a simple JSON array of strings.`,
@@ -142,12 +124,9 @@ export async function getSuggestions(input: string): Promise<string[]> {
       },
     });
 
-    if (!response || !response.text) return [];
-
     return JSON.parse(response.text);
-  } catch (error: any) {
-    console.error("Error getting suggestions:", error);
-    if (error.message) console.error("Suggestion Error Message:", error.message);
+  } catch (error) {
+    console.error("Error getting suggestions in Gemini:", error);
     return [];
   }
 }
