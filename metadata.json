@@ -1,0 +1,7 @@
+{
+  "name": "Pharmacy Medical Assistant",
+  "description": "An AI-powered medical assistant providing concise drug information and scanning.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
